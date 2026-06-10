@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coop Key — Chicken &amp; Turkey Breed Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3efe3; --paper-2:#ece7d6; --card:#fbf9f1; --ink:#2b2a26; --ink-soft:#5f5b4f;
+    --line:#d9d2bd; --green:#3b5840; --green-d:#2c4331; --gold:#d29a2b; --gold-d:#b07e16;
+    --barn:#a8432f; --slate:#4f6d7a; --shadow:0 1px 2px rgba(43,42,38,.06),0 8px 24px rgba(43,42,38,.08);
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{line-height:1.5}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 18px 80px}
+  a{color:var(--green)}
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  header.app{background:var(--green);color:#f3efe3;border-bottom:3px solid var(--gold)}
+  .head-inner{max-width:1100px;margin:0 auto;padding:18px 18px 0}
+  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .brand h1{font-family:"Fraunces",serif;font-weight:600;font-size:30px;margin:0;letter-spacing:-.01em}
+  .brand .sub{color:#cfdcc9;font-size:13.5px;max-width:48ch}
+  .tabs{display:flex;gap:4px;margin-top:16px;flex-wrap:wrap}
+  .tab{appearance:none;border:0;background:transparent;color:#cfdcc9;font:inherit;font-weight:600;font-size:14px;
+    padding:10px 16px;border-radius:10px 10px 0 0;cursor:pointer;border-bottom:3px solid transparent}
+  .tab:hover{color:#fff}
+  .tab[aria-selected="true"]{background:var(--paper);color:var(--green-d);border-bottom-color:var(--paper)}
+  .tab .dot{display:inline-block;min-width:18px;padding:0 5px;margin-left:6px;background:var(--gold);color:#3a2a05;
+    border-radius:999px;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 16px}
+  .search{flex:1 1 240px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:9px 14px;box-shadow:var(--shadow)}
+  .search input{border:0;background:transparent;font:inherit;width:100%;outline:none;color:var(--ink)}
+  .search svg{flex:none;opacity:.5}
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+  .seg button{appearance:none;border:0;background:transparent;font:inherit;font-weight:600;font-size:13px;color:var(--ink-soft);
+    padding:7px 13px;border-radius:999px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--green);color:#f3efe3}
+  select.filter{appearance:none;background:var(--card);border:1px solid var(--line);border-radius:999px;font:inherit;
+    font-size:13px;font-weight:500;padding:8px 32px 8px 14px;color:var(--ink);cursor:pointer;box-shadow:var(--shadow);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%235f5b4f' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+    overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;padding:0;position:relative;transition:transform .12s ease,box-shadow .12s ease}
+  .card:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(43,42,38,.08),0 14px 30px rgba(43,42,38,.12)}
+  .card:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .card .top{padding:14px 16px 12px;border-bottom:1px dashed var(--line)}
+  .typebar{height:5px;width:100%}
+  .typebar.chicken{background:var(--barn)} .typebar.turkey{background:var(--slate)}
+  .card h3{font-family:"Fraunces",serif;font-weight:600;font-size:19px;margin:0 0 2px;line-height:1.2}
+  .meta{font-size:12.5px;color:var(--ink-soft)}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 14px}
+  .badge{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft);
+    display:inline-flex;align-items:center;gap:6px}
+  .badge.purpose{background:#eef2e9;color:var(--green-d)}
+  .star{position:absolute;top:10px;right:10px;border:0;background:rgba(251,249,241,.92);border-radius:999px;width:30px;height:30px;
+    cursor:pointer;font-size:15px;line-height:1;display:grid;place-items:center;box-shadow:var(--shadow);color:#c9c2ad}
+  .star.on{color:var(--gold)}
+  .egg-dot{width:14px;height:18px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;border:1px solid rgba(0,0,0,.12);display:inline-block;vertical-align:middle}
+  .count{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:var(--r);padding:34px;text-align:center;color:var(--ink-soft)}
+  .empty b{color:var(--ink);font-family:"Fraunces",serif;font-weight:600;display:block;font-size:17px;margin-bottom:4px}
+  .id-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+  .panel h2{font-family:"Fraunces",serif;font-weight:600;font-size:20px;margin:0 0 2px}
+  .panel .lead{font-size:13.5px;color:var(--ink-soft);margin:0 0 6px}
+  fieldset{border:0;padding:14px 0 0;margin:0;border-top:1px dashed var(--line)}
+  fieldset.first{border-top:0}
+  legend{padding:0;font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:.02em;display:flex;justify-content:space-between;width:100%}
+  legend .hint{font-weight:500;color:var(--ink-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{appearance:none;border:1px solid var(--line);background:var(--paper);border-radius:11px;font:inherit;font-size:13px;
+    font-weight:500;padding:8px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:var(--ink);transition:border-color .1s,background .1s}
+  .chip:hover{border-color:var(--gold)}
+  .chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#f3efe3}
+  .chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .chip .sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.12);flex:none}
+  .chip svg{display:block}
+  .reset{margin-top:14px;display:flex;gap:10px;align-items:center}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--paper);font:inherit;font-weight:600;font-size:13px;
+    padding:9px 14px;border-radius:10px;cursor:pointer;color:var(--ink)}
+  .btn:hover{border-color:var(--ink-soft)}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#f3efe3}
+  .btn.primary:hover{background:var(--green-d)}
+  .btn.ghost{background:transparent}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .results-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+  .learn-note{font-size:12px;color:var(--green-d);background:#eef2e9;border-radius:999px;padding:3px 10px;font-weight:600}
+  .res{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+  .res.win{border-color:var(--gold);box-shadow:0 0 0 2px rgba(210,154,43,.18)}
+  .res .row1{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .res h4{font-family:"Fraunces",serif;font-weight:600;font-size:17px;margin:0;line-height:1.15}
+  .res .pct{font-weight:700;font-size:13px;color:var(--green-d);white-space:nowrap}
+  .bar{height:7px;background:var(--paper-2);border-radius:999px;margin:8px 0 6px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:999px}
+  .res .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .tag{font-size:11px;background:#eef2e9;color:var(--green-d);border-radius:999px;padding:2px 8px;font-weight:600}
+  .tag.miss{background:#f3ece2;color:#9a7b4f}
+  .res .act{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+  .res .act .btn{padding:6px 10px;font-size:12px}
+  .boosted{font-size:11px;color:var(--gold-d);font-weight:700;margin-left:6px}
+  .fb{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+  .fb h3{font-family:"Fraunces",serif;font-weight:600;font-size:16px;margin:0 0 3px}
+  .fb p{font-size:12.5px;color:var(--ink-soft);margin:0 0 10px}
+  .fb-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .fb select{flex:1 1 180px;appearance:none;background:var(--paper);border:1px solid var(--line);border-radius:10px;font:inherit;
+    font-size:13px;padding:9px 12px;color:var(--ink)}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(12px);background:var(--green-d);color:#f3efe3;
+    padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 18px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .stat .n{font-family:"Fraunces",serif;font-weight:600;font-size:26px;line-height:1}
+  .stat .l{font-size:11.5px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+  .log{list-style:none;margin:0;padding:0}
+  .log li{padding:10px 0;border-top:1px dashed var(--line);font-size:13px}
+  .log li:first-child{border-top:0}
+  .log .when{color:var(--ink-soft);font-size:11.5px}
+  .log b{color:var(--green-d)}
+  .kbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .danger{color:var(--barn);border-color:#e3bcb0}
+  .danger:hover{border-color:var(--barn)}
+  .scrim{position:fixed;inset:0;background:rgba(43,42,38,.5);display:none;align-items:flex-start;justify-content:center;
+    padding:28px 16px;overflow:auto;z-index:50}
+  .scrim.open{display:flex}
+  .modal{background:var(--card);max-width:560px;width:100%;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+  .modal .mhead{padding:18px 20px;color:#fff;position:relative}
+  .modal .mhead.chicken{background:var(--barn)} .modal .mhead.turkey{background:var(--slate)}
+  .modal .mhead h2{font-family:"Fraunces",serif;font-weight:600;font-size:24px;margin:0 0 2px}
+  .modal .mhead .o{font-size:13px;opacity:.92}
+  .modal .close{position:absolute;top:14px;right:14px;border:0;background:rgba(255,255,255,.2);color:#fff;width:32px;height:32px;
+    border-radius:999px;font-size:18px;cursor:pointer;line-height:1}
+  .modal .mbody{padding:18px 20px 22px}
+  .idtip{background:#fff7e6;border:1px solid #f0dba6;border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
+  .idtip b{color:var(--gold-d)}
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+  .spec .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .spec .v{font-size:14px}
+  .mfoot{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  footer{margin-top:34px;font-size:12px;color:var(--ink-soft);text-align:center}
+  @media (max-width:760px){ .id-layout{grid-template-columns:1fr} .stat-row{grid-template-columns:1fr} .specs{grid-template-columns:1fr} .brand h1{font-size:25px} }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="head-inner">
+    <div class="brand">
+      <h1>Coop Key</h1>
+      <span class="sub">A field guide and breed finder for backyard chicken &amp; turkey keepers. Works offline — your sightings stay on your device.</span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-mode="browse" aria-selected="true">Browse breeds</button>
+      <button class="tab" role="tab" data-mode="identify" aria-selected="false">Identify a bird</button>
+      <button class="tab" role="tab" data-mode="knowledge" aria-selected="false">Knowledge <span class="dot" id="kdot" hidden>0</span></button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <section id="view-browse">
+    <div class="toolbar">
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input id="q" type="search" placeholder="Search breeds, e.g. Wyandotte, blue eggs, rose comb">
+      </label>
+      <div class="seg" role="group" aria-label="Poultry type">
+        <button data-type="all" aria-pressed="true">All</button>
+        <button data-type="chicken" aria-pressed="false">Chickens</button>
+        <button data-type="turkey" aria-pressed="false">Turkeys</button>
+      </div>
+      <select class="filter" id="fEgg" aria-label="Filter by egg color">
+        <option value="">Any egg color</option>
+        <option value="white">White eggs</option>
+        <option value="cream">Cream / tinted</option>
+        <option value="brown">Brown eggs</option>
+        <option value="dark-brown">Dark / chocolate</option>
+        <option value="blue">Blue eggs</option>
+        <option value="green">Green / olive</option>
+      </select>
+      <select class="filter" id="fPurpose" aria-label="Filter by purpose">
+        <option value="">Any purpose</option>
+        <option value="Eggs">Eggs</option>
+        <option value="Dual">Dual purpose</option>
+        <option value="Meat">Meat</option>
+        <option value="Ornamental">Ornamental</option>
+      </select>
+      <button class="btn ghost" id="favOnly" aria-pressed="false">★ Favorites</button>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+  <section id="view-identify" hidden>
+    <div class="id-layout">
+      <div class="panel" id="idForm">
+        <h2>What does your bird look like?</h2>
+        <p class="lead">Tap what you can see. Skip anything you're unsure of — matches sharpen as you add detail.</p>
+        <div id="traitGroups"></div>
+        <div class="reset">
+          <button class="btn ghost" id="clearTraits">Clear all</button>
+          <span class="meta" id="answeredNote"></span>
+        </div>
+      </div>
+      <div class="panel" id="idResults" aria-live="polite">
+        <div class="results-head">
+          <h2 style="margin:0">Likely matches</h2>
+          <span class="learn-note" id="learnNote" hidden></span>
+        </div>
+        <div id="resultsBody"></div>
+      </div>
+    </div>
+  </section>
+  <section id="view-knowledge" hidden>
+    <div class="panel">
+      <h2>What the guide has learned</h2>
+      <p class="lead">Every time you confirm or correct an ID, it's saved here and used to weight future matches. Nothing leaves your device unless you export it.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="sTotal">0</div><div class="l">Confirmed sightings</div></div>
+        <div class="stat"><div class="n" id="sAcc">—</div><div class="l">Top-guess accuracy</div></div>
+        <div class="stat"><div class="n" id="sBreeds">0</div><div class="l">Breeds taught</div></div>
+      </div>
+      <div class="kbtns">
+        <button class="btn primary" id="exportK">Export knowledge pack</button>
+        <button class="btn" id="importK">Import &amp; merge a pack</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <button class="btn ghost danger" id="resetK">Reset learning</button>
+      </div>
+      <p class="lead" style="margin-top:12px">Share a pack with other homesteaders to pool corrections — importing merges their sightings into yours.</p>
+      <h3 style="font-family:'Fraunces',serif;margin:18px 0 4px">Recent sightings</h3>
+      <ul class="log" id="log"></ul>
+    </div>
+  </section>
+  <footer>Coop Key · single-file field guide · breed facts are general guidance, not a substitute for a breeder or vet.</footer>
+</main>
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="mhead" id="mHead"><button class="close" id="mClose" aria-label="Close">×</button>
+      <h2 id="mTitle"></h2><div class="o" id="mOrigin"></div></div>
+    <div class="mbody" id="mBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ---------- Breed data ---------- */
+const EGG_COLOR={white:'#f3ead9',cream:'#ecd9ae',brown:'#b5773f','dark-brown':'#6e4329',blue:'#b4d2cc',green:'#a6b27a'};
+const EGG_LABEL={white:'White',cream:'Cream/tinted',brown:'Brown','dark-brown':'Dark chocolate',blue:'Blue',green:'Green/olive'};
+const BREEDS=[
+{id:'rir',name:'Rhode Island Red',type:'chicken',origin:'United States',purpose:'Dual',size:'6.5–8.5 lb',
+ egg:'Brown · ~250–300/yr',comb:'Single (rose variety exists)',temperament:'Hardy & productive; roosters can be assertive',
+ hardiness:'Very cold-hardy',colors:'Deep rust-red',idTip:'Rich brick-red, rectangular "brick" build; most have a single comb.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['solid-red'],legs:'yellow'}},
+{id:'rock',name:'Plymouth Rock (Barred)',type:'chicken',origin:'United States',purpose:'Dual',size:'7.5–9.5 lb',
+ egg:'Brown · ~200–280/yr',comb:'Single',temperament:'Docile, friendly',hardiness:'Very cold-hardy',colors:'Black & white barring',
+ idTip:'Crisp, even black/white bars + a single comb. The rose-combed look-alike is the Dominique.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['barred'],legs:'yellow'}},
+{id:'leghorn',name:'White Leghorn',type:'chicken',origin:'Italy / Mediterranean',purpose:'Eggs',size:'4.5–6 lb',
+ egg:'White · ~280–320/yr',comb:'Single (large, often flops)',temperament:'Active, flighty',hardiness:'Heat-tolerant',colors:'White',
+ idTip:'All-white, lightweight, with an oversized single comb; a white-egg machine.',
+ t:{size:'medium',egg:['white'],comb:'single',pattern:['solid-white'],legs:'yellow'}},
+{id:'orpington',name:'Buff Orpington',type:'chicken',origin:'England',purpose:'Dual',size:'8–10 lb',
+ egg:'Brown · ~180–220/yr',comb:'Single',temperament:'Very docile, broody, lap-friendly',hardiness:'Very cold-hardy',colors:'Golden buff',
+ idTip:'Big, fluffy, golden-buff body and an easygoing temperament.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['buff'],legs:'pink'}},
+{id:'australorp',name:'Australorp',type:'chicken',origin:'Australia',purpose:'Dual',size:'6.5–8.5 lb',
+ egg:'Brown · ~250–300/yr',comb:'Single',temperament:'Friendly, calm; a laying record-holder',hardiness:'Cold-hardy',colors:'Glossy black, green sheen',
+ idTip:'Jet-black with a green beetle-sheen and dark legs — the sheen sets it apart from other blacks.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['solid-black'],legs:'slate'}},
+{id:'wyandotte',name:'Wyandotte',type:'chicken',origin:'United States',purpose:'Dual',size:'6.5–8.5 lb',
+ egg:'Brown · ~200/yr',comb:'Rose',temperament:'Calm, confident',hardiness:'Very cold-hardy',colors:'Laced (silver, gold, blue)',
+ idTip:'Rounded body + rose comb; the feather lacing is the giveaway.',
+ t:{size:'large',egg:['brown'],comb:'rose',pattern:['laced'],legs:'yellow'}},
+{id:'sussex',name:'Speckled Sussex',type:'chicken',origin:'England',purpose:'Dual',size:'7–9 lb',
+ egg:'Brown/tinted · ~250/yr',comb:'Single',temperament:'Curious, friendly',hardiness:'Cold-hardy',colors:'Mahogany flecked with white',
+ idTip:'Rich mahogany with white-tipped speckles that increase with each molt.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['speckled'],legs:'pink'}},
+{id:'brahma',name:'Brahma',type:'chicken',origin:'United States / Asia',purpose:'Dual',size:'9.5–12 lb',
+ egg:'Brown · ~150–200/yr',comb:'Pea',temperament:'Gentle giant',hardiness:'Very cold-hardy',colors:'Light, Dark, Buff',
+ idTip:'Huge and upright with feathered feet and a pea comb; Columbian-style neck & tail markings.',
+ t:{size:'giant',egg:['brown'],comb:'pea',pattern:['columbian'],legs:'yellow',featheredFeet:true}},
+{id:'cochin',name:'Cochin',type:'chicken',origin:'China',purpose:'Ornamental',size:'8.5–11 lb',
+ egg:'Brown · ~150–180/yr',comb:'Single',temperament:'Calm, very broody',hardiness:'Cold-hardy',colors:'Many; profusely fluffy',
+ idTip:'A round ball of fluff with heavily feathered feet and a single comb — even fluffier than a Brahma.',
+ t:{size:'giant',egg:['brown'],comb:'single',pattern:['buff'],legs:'yellow',featheredFeet:true}},
+{id:'silkie',name:'Silkie',type:'chicken',origin:'China',purpose:'Ornamental',size:'2–3 lb',
+ egg:'Cream · ~100–120/yr',comb:'Walnut (mulberry)',temperament:'Docile, broody',hardiness:'Cold-sensitive when wet',colors:'White, black, blue & more',
+ idTip:'Hair-like "fur", black skin, blue earlobes, feathered feet and 5 toes — unmistakable.',
+ t:{size:'bantam',egg:['cream'],comb:'walnut',pattern:['solid-white'],legs:'slate',crest:true,beard:true,featheredFeet:true}},
+{id:'ee',name:'Easter Egger',type:'chicken',origin:'United States (mixed)',purpose:'Eggs',size:'4–5 lb',
+ egg:'Blue / green · ~200–280/yr',comb:'Pea (usually)',temperament:'Friendly, hardy',hardiness:'Cold-hardy',colors:'Highly variable',
+ idTip:'A mixed look + colored (blue/green) eggs, often with cheek muffs. Not a standardized breed.',
+ t:{size:'medium',egg:['blue','green'],comb:'pea',pattern:['partridge'],legs:'slate',beard:true}},
+{id:'ameraucana',name:'Ameraucana',type:'chicken',origin:'United States',purpose:'Eggs',size:'5.5–6.5 lb',
+ egg:'Blue · ~200–250/yr',comb:'Pea',temperament:'Active, hardy',hardiness:'Cold-hardy',colors:'Several standardized',
+ idTip:'True blue eggs, a beard + muffs, slate legs, and a full tail (vs. the tail-less Araucana).',
+ t:{size:'medium',egg:['blue'],comb:'pea',pattern:['solid-black'],legs:'slate',beard:true}},
+{id:'marans',name:'Marans (Black Copper)',type:'chicken',origin:'France',purpose:'Dual',size:'7–8 lb',
+ egg:'Dark chocolate · ~150–200/yr',comb:'Single',temperament:'Calm',hardiness:'Cold-hardy',colors:'Black with copper hackles',
+ idTip:'Famous for very dark "chocolate" eggs; Black Copper shows coppery hackles and lightly feathered shanks.',
+ t:{size:'large',egg:['dark-brown'],comb:'single',pattern:['solid-black'],legs:'pink',featheredFeet:true}},
+{id:'welsummer',name:'Welsummer',type:'chicken',origin:'Netherlands',purpose:'Dual',size:'6–7 lb',
+ egg:'Dark, often speckled · ~160–250/yr',comb:'Single',temperament:'Friendly, alert',hardiness:'Cold-hardy',colors:'Partridge (the "cornflakes rooster")',
+ idTip:'Lays dark, sometimes speckled eggs; hens are reddish-partridge with a salmon breast.',
+ t:{size:'large',egg:['dark-brown'],comb:'single',pattern:['partridge'],legs:'yellow'}},
+{id:'barnevelder',name:'Barnevelder',type:'chicken',origin:'Netherlands',purpose:'Dual',size:'6–7 lb',
+ egg:'Brown · ~180–200/yr',comb:'Single',temperament:'Calm',hardiness:'Cold-hardy',colors:'Double-laced chestnut',
+ idTip:'Bold double-laced chestnut feathers — concentric rings — with a single comb.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['laced'],legs:'yellow'}},
+{id:'faverolles',name:'Salmon Faverolles',type:'chicken',origin:'France',purpose:'Dual',size:'6.5–8 lb',
+ egg:'Cream/tinted · ~180–240/yr',comb:'Single',temperament:'Gentle, quirky',hardiness:'Cold-hardy',colors:'Salmon & cream (hens)',
+ idTip:'Beard + muffs, feathered feet, AND five toes; hens show soft salmon coloring.',
+ t:{size:'large',egg:['cream'],comb:'single',pattern:['salmon'],legs:'pink',beard:true,featheredFeet:true}},
+{id:'polish',name:'Polish',type:'chicken',origin:'Europe',purpose:'Ornamental',size:'4.5–6 lb',
+ egg:'White · ~150–200/yr',comb:'V-shape (small)',temperament:'Flighty (crest limits vision)',hardiness:'Cold-hardy',colors:'White-crested black, golden, silver',
+ idTip:'The giant pom-pom crest is the signature; a small V-comb hides beneath it.',
+ t:{size:'medium',egg:['white'],comb:'v-shape',pattern:['solid-black'],legs:'slate',crest:true}},
+{id:'dominique',name:'Dominique',type:'chicken',origin:'United States',purpose:'Dual',size:'5–7 lb',
+ egg:'Brown · ~230–270/yr',comb:'Rose',temperament:'Calm, foraging',hardiness:'Very cold-hardy',colors:'"Hawk" barring',
+ idTip:'Looks barred like a Plymouth Rock but has a ROSE comb and softer, less even barring.',
+ t:{size:'medium',egg:['brown'],comb:'rose',pattern:['barred'],legs:'yellow'}},
+{id:'newhampshire',name:'New Hampshire',type:'chicken',origin:'United States',purpose:'Dual',size:'6.5–8.5 lb',
+ egg:'Brown · ~200/yr',comb:'Single',temperament:'Fast-maturing, competitive',hardiness:'Cold-hardy',colors:'Chestnut-red (paler than RIR)',
+ idTip:'Like a paler, more golden Rhode Island Red; matures quickly.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['solid-red'],legs:'yellow'}},
+{id:'jerseygiant',name:'Jersey Giant',type:'chicken',origin:'United States',purpose:'Meat',size:'10–13 lb',
+ egg:'Brown · ~150–200/yr',comb:'Single',temperament:'Calm, slow-growing',hardiness:'Cold-hardy',colors:'Black, White, Blue',
+ idTip:'The biggest standard chicken; the black has willow-green shanks with yellow foot bottoms.',
+ t:{size:'giant',egg:['brown'],comb:'single',pattern:['solid-black'],legs:'willow'}},
+{id:'delaware',name:'Delaware',type:'chicken',origin:'United States',purpose:'Dual',size:'6.5–8.5 lb',
+ egg:'Brown · ~200–280/yr',comb:'Single',temperament:'Calm, friendly',hardiness:'Cold-hardy',colors:'White with black neck/tail barring',
+ idTip:'Mostly white with a black "necklace" on the hackle and tail; yellow legs.',
+ t:{size:'large',egg:['brown'],comb:'single',pattern:['columbian'],legs:'yellow'}},
+{id:'buckeye',name:'Buckeye',type:'chicken',origin:'United States',purpose:'Dual',size:'6.5–9 lb',
+ egg:'Brown · ~150–200/yr',comb:'Pea',temperament:'Active, friendly, mouser',hardiness:'Very cold-hardy',colors:'Solid mahogany red',
+ idTip:'Deep mahogany red with a PEA comb — rare among red American breeds — and very cold-hardy.',
+ t:{size:'large',egg:['brown'],comb:'pea',pattern:['solid-red'],legs:'yellow'}},
+{id:'andalusian',name:'Blue Andalusian',type:'chicken',origin:'Spain / Mediterranean',purpose:'Eggs',size:'5.5–7 lb',
+ egg:'White · ~150–200/yr',comb:'Single',temperament:'Active, flighty',hardiness:'Heat-tolerant',colors:'Slate-blue, laced',
+ idTip:'Elegant slate-blue body with darker feather lacing; lays white eggs.',
+ t:{size:'medium',egg:['white'],comb:'single',pattern:['blue'],legs:'slate'}},
+{id:'hamburg',name:'Silver Spangled Hamburg',type:'chicken',origin:'Europe',purpose:'Eggs',size:'4–5 lb',
+ egg:'White · ~200/yr',comb:'Rose',temperament:'Active, flighty',hardiness:'Cold-hardy',colors:'White with black spangles',
+ idTip:'Dainty, white with black spangles, a rose comb and blue-slate legs.',
+ t:{size:'small',egg:['white'],comb:'rose',pattern:['spangled'],legs:'slate'}},
+{id:'bbwhite',name:'Broad Breasted White',type:'turkey',origin:'United States (commercial)',purpose:'Meat',size:'Toms 25–45 lb',
+ egg:'—',comb:'—',temperament:'Calm, fast-growing',hardiness:'Heat-sensitive at weight',colors:'White',
+ idTip:'All-white, very heavy commercial bird; cannot fly or breed naturally.',
+ t:{size:'giant',plumage:'white',heritage:false}},
+{id:'bbbronze',name:'Broad Breasted Bronze',type:'turkey',origin:'United States (commercial)',purpose:'Meat',size:'Toms 25–40 lb',
+ egg:'—',comb:'—',temperament:'Calm, fast-growing',hardiness:'Heat-sensitive at weight',colors:'Bronze',
+ idTip:'Bronze coloring on a huge commercial frame; the supermarket-type bird in bronze.',
+ t:{size:'giant',plumage:'bronze',heritage:false}},
+{id:'stdbronze',name:'Standard Bronze (Heritage)',type:'turkey',origin:'United States',purpose:'Dual',size:'Toms 25–36 lb',
+ egg:'—',comb:'—',temperament:'Active forager',hardiness:'Hardy',colors:'Iridescent bronze',
+ idTip:'Classic coppery-bronze with iridescence; leggier and lighter than the broad-breasted type, and breeds naturally.',
+ t:{size:'large',plumage:'bronze',heritage:true}},
+{id:'bourbon',name:'Bourbon Red',type:'turkey',origin:'United States (Kentucky)',purpose:'Dual',size:'Toms 23–33 lb',
+ egg:'—',comb:'—',temperament:'Good forager, personable',hardiness:'Hardy',colors:'Chestnut-red, white wings/tail',
+ idTip:'Deep chestnut-red body with contrasting white wings and tail.',
+ t:{size:'large',plumage:'red',heritage:true}},
+{id:'narragansett',name:'Narragansett',type:'turkey',origin:'United States (New England)',purpose:'Dual',size:'Toms 22–33 lb',
+ egg:'—',comb:'—',temperament:'Calm, excellent forager',hardiness:'Hardy',colors:'Steel-gray banding',
+ idTip:'Soft steel-gray bands instead of bronze — like a faded, silvery Bronze.',
+ t:{size:'large',plumage:'gray-barred',heritage:true}},
+{id:'royalpalm',name:'Royal Palm',type:'turkey',origin:'United States',purpose:'Ornamental',size:'Toms 16–22 lb',
+ egg:'—',comb:'—',temperament:'Active, alert',hardiness:'Hardy',colors:'White with black edging',
+ idTip:'Crisp white sharply laced with black; small and showy rather than meaty.',
+ t:{size:'small',plumage:'palm',heritage:true}},
+{id:'blackturkey',name:'Black (Spanish/Norfolk)',type:'turkey',origin:'Europe / Americas',purpose:'Dual',size:'Toms 23–33 lb',
+ egg:'—',comb:'—',temperament:'Hardy, foraging',hardiness:'Hardy',colors:'Metallic black',
+ idTip:'Solid metallic black with a green sheen; one of the oldest domestic turkeys.',
+ t:{size:'large',plumage:'black',heritage:true}},
+{id:'whiteholland',name:'White Holland',type:'turkey',origin:'Europe / United States',purpose:'Dual',size:'Toms 25–33 lb',
+ egg:'—',comb:'—',temperament:'Calm',hardiness:'Hardy',colors:'White',
+ idTip:'A heritage all-white that breeds naturally — unlike the Broad Breasted White.',
+ t:{size:'large',plumage:'white',heritage:true}},
+{id:'blueslate',name:'Blue Slate',type:'turkey',origin:'United States',purpose:'Dual',size:'Toms 23–33 lb',
+ egg:'—',comb:'—',temperament:'Calm forager',hardiness:'Hardy',colors:'Ashy slate-blue',
+ idTip:'Soft ash-blue/slate plumage, sometimes flecked with black.',
+ t:{size:'large',plumage:'slate',heritage:true}},
+{id:'beltsville',name:'Beltsville Small White',type:'turkey',origin:'United States',purpose:'Meat',size:'Toms 17–21 lb',
+ egg:'—',comb:'—',temperament:'Docile',hardiness:'Hardy',colors:'White',
+ idTip:'A small white heritage bird bred for a compact roast; critically rare.',
+ t:{size:'small',plumage:'white',heritage:true}},
+{id:'midgetwhite',name:'Midget White',type:'turkey',origin:'United States',purpose:'Dual',size:'Toms 13–18 lb',
+ egg:'—',comb:'—',temperament:'Docile, friendly',hardiness:'Hardy',colors:'White',
+ idTip:'The smallest white turkey; ideal for small homesteads.',
+ t:{size:'small',plumage:'white',heritage:true}},
+{id:'chocolate',name:'Chocolate',type:'turkey',origin:'United States / Europe',purpose:'Dual',size:'Toms 23–33 lb',
+ egg:'—',comb:'—',temperament:'Calm',hardiness:'Hardy',colors:'Solid chocolate-brown',
+ idTip:'Uniform rich chocolate-brown all over; a rare heritage color.',
+ t:{size:'large',plumage:'chocolate',heritage:true}}
+];
+const BY_ID=Object.fromEntries(BREEDS.map(b=>[b.id,b]));
+const SIZE_LABEL={bantam:'Bantam (tiny)',small:'Small',medium:'Medium',large:'Large',giant:'Giant'};
+const PATTERN={'solid-black':{l:'Solid black',c:'#2a2a2a'},'solid-white':{l:'Solid white',c:'#f4f1e9'},
+ 'solid-red':{l:'Solid red',c:'#9a3b22'},buff:{l:'Buff / golden',c:'#d9a441'},barred:{l:'Barred',c:'bars'},
+ laced:{l:'Laced',c:'#8a6a3a'},spangled:{l:'Spangled',c:'#7a7a7a'},speckled:{l:'Speckled',c:'#6b4a2b'},
+ partridge:{l:'Partridge / brown',c:'#7a5a2f'},columbian:{l:'White w/ dark points',c:'cols'},blue:{l:'Blue / grey',c:'#7e93a8'},
+ salmon:{l:'Salmon / cream',c:'#e7b7a3'}};
+const LEG_LABEL={yellow:'Yellow',pink:'Pink / white',slate:'Slate / grey',willow:'Willow (green)'};
+const PLUMAGE={white:{l:'White',c:'#f4f1e9'},bronze:{l:'Bronze',c:'#6b4a2b'},black:{l:'Black',c:'#2a2a2a'},
+ red:{l:'Red w/ white',c:'#8a3b22'},slate:{l:'Slate blue',c:'#8c98a6'},'gray-barred':{l:'Grey banded',c:'bars'},
+ palm:{l:'White w/ black edge',c:'cols'},chocolate:{l:'Chocolate brown',c:'#5a3a24'}};
+function patternSwatch(key){
+  const p=PATTERN[key]||PLUMAGE[key]; if(!p) return '';
+  if(p.c==='bars') return '<span class="sw" style="background:repeating-linear-gradient(45deg,#2a2a2a 0 3px,#e8e3d4 3px 6px)"></span>';
+  if(p.c==='cols') return '<span class="sw" style="background:linear-gradient(135deg,#f4f1e9 55%,#2a2a2a 55%)"></span>';
+  return '<span class="sw" style="background:'+p.c+'"></span>';
+}
+function eggSwatch(key){return '<span class="egg-dot" style="background:'+EGG_COLOR[key]+'"></span>';}
+function combIcon(type){
+  const s='stroke="#2b2a26" stroke-width="1.5" fill="#a8432f"';
+  const map={
+    single:'<svg width="30" height="18"><path d="M4 14 L4 9 L7 6 L8 9 L11 5 L12 9 L15 5 L16 9 L19 6 L20 9 L23 7 L26 14 Z" '+s+'/></svg>',
+    rose:'<svg width="30" height="18"><path d="M5 14 Q5 6 14 6 Q23 6 22 11 L27 7 L24 12 L26 14 Z" '+s+'/><circle cx="11" cy="9" r="1" fill="#2b2a26"/><circle cx="15" cy="10" r="1" fill="#2b2a26"/></svg>',
+    pea:'<svg width="30" height="18"><path d="M6 14 Q9 8 12 14 M11 14 Q15 7 19 14 M18 14 Q22 9 25 14" stroke="#2b2a26" stroke-width="1.5" fill="#a8432f"/></svg>',
+    walnut:'<svg width="30" height="18"><path d="M6 14 Q6 6 15 6 Q24 6 24 14 Z" '+s+'/><path d="M15 6 V13 M10 8 Q15 11 20 8" stroke="#2b2a26" stroke-width="1" fill="none"/></svg>',
+    'v-shape':'<svg width="30" height="18"><path d="M11 14 L13 5 L15 11 L17 5 L19 14 Z" '+s+'/></svg>',
+    none:'<svg width="30" height="18"><path d="M8 11 H22" stroke="#9a9481" stroke-width="2"/></svg>'
+  };
+  return map[type]||map.single;
+}
+const CHICKEN_GROUPS=[
+ {key:'size',label:'Body size',hint:'pick one',single:true,opts:Object.keys(SIZE_LABEL).map(v=>({v:v,l:SIZE_LABEL[v]}))},
+ {key:'egg',label:'Egg color',hint:'if you have seen the eggs',single:true,opts:Object.keys(EGG_LABEL).map(v=>({v:v,l:EGG_LABEL[v],deco:eggSwatch(v)}))},
+ {key:'comb',label:'Comb on top of the head',hint:'pick one',single:true,opts:[
+   {v:'single',l:'Single (saw-tooth)',deco:combIcon('single')},{v:'rose',l:'Rose (flat & bumpy)',deco:combIcon('rose')},
+   {v:'pea',l:'Pea (3 low ridges)',deco:combIcon('pea')},{v:'walnut',l:'Walnut (lumpy)',deco:combIcon('walnut')},
+   {v:'v-shape',l:'V-shape (two horns)',deco:combIcon('v-shape')}]},
+ {key:'pattern',label:'Color / feather pattern',hint:'pick the closest',single:true,opts:Object.keys(PATTERN).map(v=>({v:v,l:PATTERN[v].l,deco:patternSwatch(v)}))},
+ {key:'legs',label:'Leg color',hint:'pick one',single:true,opts:Object.keys(LEG_LABEL).map(v=>({v:v,l:LEG_LABEL[v]}))},
+ {key:'features',label:'Standout features',hint:'tap any that apply',single:false,opts:[
+   {v:'crest',l:'Crest / pom-pom of feathers'},{v:'beard',l:'Beard or cheek muffs'},{v:'featheredFeet',l:'Feathered feet'}]}
+];
+const TURKEY_GROUPS=[
+ {key:'size',label:'Size',hint:'pick one',single:true,opts:[['small','Small (13–22 lb)'],['large','Standard (22–36 lb)'],['giant','Very heavy (broad-breasted)']].map(p=>({v:p[0],l:p[1]}))},
+ {key:'plumage',label:'Plumage color',hint:'pick the closest',single:true,opts:Object.keys(PLUMAGE).map(v=>({v:v,l:PLUMAGE[v].l,deco:patternSwatch(v)}))},
+ {key:'heritage',label:'Type',hint:'pick one if known',single:true,opts:[
+   {v:'heritage',l:'Heritage (breeds & flies naturally)'},{v:'commercial',l:'Broad-breasted / commercial'}]}
+];
+/* ---------- State ---------- */
+const LS={fav:'ck_fav',learn:'ck_learn',mode:'ck_mode'};
+function load(k,def){try{const v=JSON.parse(localStorage.getItem(k));return v==null?def:v;}catch(e){return def;}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
+let favorites=new Set(load(LS.fav,[]));
+let learning=load(LS.learn,{version:1,observations:[]});
+let mode=localStorage.getItem(LS.mode)||'browse';
+let idType='chicken';
+let sel={};
+let feat=new Set();
+let lastResults=[];
+
+/* ---------- Browse ---------- */
+const grid=document.getElementById('grid');
+let bType='all',bEgg='',bPurpose='',bQuery='',bFavOnly=false;
+function matchesBrowse(b){
+  if(bType!=='all'&&b.type!==bType) return false;
+  if(bPurpose&&b.purpose!==bPurpose) return false;
+  if(bEgg&&!(b.t.egg||[]).includes(bEgg)) return false;
+  if(bFavOnly&&!favorites.has(b.id)) return false;
+  if(bQuery){
+    const hay=(b.name+' '+b.origin+' '+b.purpose+' '+b.comb+' '+b.colors+' '+b.egg+' '+(b.t.egg||[]).map(e=>EGG_LABEL[e]).join(' ')).toLowerCase();
+    if(!hay.includes(bQuery.toLowerCase())) return false;
+  }
+  return true;
+}
+function renderBrowse(){
+  const list=BREEDS.filter(matchesBrowse);
+  document.getElementById('count').textContent=list.length+' breed'+(list.length!==1?'s':'')+(bFavOnly?' in favorites':'');
+  if(!list.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><b>No matches</b>Try clearing a filter or the search box.</div>';return;}
+  grid.innerHTML=list.map(b=>{
+    const eggDot=(b.t.egg||[]).length?'<span class="badge">'+eggSwatch(b.t.egg[0])+' '+EGG_LABEL[b.t.egg[0]]+' eggs</span>':'';
+    return '<button class="card" data-id="'+b.id+'" aria-label="'+b.name+' details">'
+      +'<span class="typebar '+b.type+'"></span>'
+      +'<span class="star '+(favorites.has(b.id)?'on':'')+'" data-fav="'+b.id+'" role="button" aria-label="Toggle favorite">★</span>'
+      +'<div class="top"><h3>'+b.name+'</h3><div class="meta">'+b.origin+' · '+b.size+'</div></div>'
+      +'<div class="badges"><span class="badge purpose">'+b.purpose+'</span>'+eggDot
+      +'<span class="badge">Comb: '+b.comb.replace(/ \(.*/,'')+'</span></div></button>';
+  }).join('');
+}
+grid.addEventListener('click',e=>{
+  const fav=e.target.closest('[data-fav]');
+  if(fav){e.stopPropagation();toggleFav(fav.dataset.fav);return;}
+  const card=e.target.closest('[data-id]');
+  if(card) openDetail(card.dataset.id);
+});
+function toggleFav(id){favorites.has(id)?favorites.delete(id):favorites.add(id);save(LS.fav,[...favorites]);renderBrowse();}
+document.getElementById('q').addEventListener('input',e=>{bQuery=e.target.value;renderBrowse();});
+document.getElementById('fEgg').addEventListener('change',e=>{bEgg=e.target.value;renderBrowse();});
+document.getElementById('fPurpose').addEventListener('change',e=>{bPurpose=e.target.value;renderBrowse();});
+document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  bType=b.dataset.type;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));renderBrowse();});
+document.getElementById('favOnly').addEventListener('click',e=>{bFavOnly=!bFavOnly;e.target.setAttribute('aria-pressed',bFavOnly);renderBrowse();});
+
+/* ---------- Detail modal ---------- */
+const scrim=document.getElementById('scrim');
+function openDetail(id){
+  const b=BY_ID[id];if(!b)return;
+  document.getElementById('mHead').className='mhead '+b.type;
+  document.getElementById('mTitle').textContent=b.name;
+  document.getElementById('mOrigin').textContent=b.origin+' · '+b.purpose+' · '+b.size;
+  const rows=[['Eggs',b.egg],['Comb',b.comb],['Temperament',b.temperament],['Hardiness',b.hardiness],['Colors',b.colors]];
+  const specs=rows.filter(p=>p[1]&&p[1]!=='—').map(p=>'<div class="spec"><div class="k">'+p[0]+'</div><div class="v">'+p[1]+'</div></div>').join('');
+  document.getElementById('mBody').innerHTML=
+    '<div class="idtip"><b>How to tell it apart:</b> '+b.idTip+'</div>'
+    +'<div class="specs">'+specs+'</div>'
+    +'<div class="mfoot"><button class="btn '+(favorites.has(b.id)?'':'primary')+'" id="mFav">'+(favorites.has(b.id)?'★ In favorites':'☆ Add to favorites')+'</button></div>';
+  document.getElementById('mFav').onclick=()=>{toggleFav(b.id);openDetail(b.id);};
+  scrim.classList.add('open');document.getElementById('mClose').focus();
+}
+document.getElementById('mClose').onclick=()=>scrim.classList.remove('open');
+scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')scrim.classList.remove('open');});
+
+/* ---------- Identify ---------- */
+function renderTraitForm(){
+  const groups=idType==='chicken'?CHICKEN_GROUPS:TURKEY_GROUPS;
+  const typeSeg='<fieldset class="first"><legend>Is it a chicken or a turkey?</legend>'
+    +'<div class="chips" role="group">'
+    +'<button class="chip" data-typebtn="chicken" aria-pressed="'+(idType==='chicken')+'">Chicken</button>'
+    +'<button class="chip" data-typebtn="turkey" aria-pressed="'+(idType==='turkey')+'">Turkey</button>'
+    +'</div></fieldset>';
+  const body=groups.map(g=>{
+    const chips=g.opts.map(o=>{
+      const on=g.single?sel[g.key]===o.v:feat.has(o.v);
+      return '<button class="chip" data-g="'+g.key+'" data-v="'+o.v+'" data-single="'+g.single+'" aria-pressed="'+on+'">'+(o.deco||'')+o.l+'</button>';
+    }).join('');
+    return '<fieldset><legend>'+g.label+'<span class="hint">'+g.hint+'</span></legend><div class="chips">'+chips+'</div></fieldset>';
+  }).join('');
+  document.getElementById('traitGroups').innerHTML=typeSeg+body;
+}
+document.getElementById('traitGroups').addEventListener('click',e=>{
+  const tb=e.target.closest('[data-typebtn]');
+  if(tb){idType=tb.dataset.typebtn;sel={};feat.clear();renderTraitForm();renderResults();return;}
+  const c=e.target.closest('.chip[data-g]');if(!c)return;
+  const g=c.dataset.g, v=c.dataset.v, single=c.dataset.single==='true';
+  if(single){ sel[g]=sel[g]===v?undefined:v; }
+  else { feat.has(v)?feat.delete(v):feat.add(v); }
+  renderTraitForm();renderResults();
+});
+document.getElementById('clearTraits').onclick=()=>{sel={};feat.clear();renderTraitForm();renderResults();};
+function answeredKeys(){
+  const singles=Object.keys(sel).filter(k=>sel[k]!=null);
+  return {singles:singles,feats:[...feat],count:singles.length+feat.size};
+}
+function staticScore(b,a){
+  if(!a.count) return {score:0,matched:[],missed:[]};
+  let m=0;const matched=[],missed=[];
+  for(const k of a.singles){
+    if(k==='heritage'){ if(b.t.heritage===(sel[k]==='heritage')){m++;matched.push('Type');} else missed.push('Type'); continue; }
+    const want=sel[k], val=b.t[k];
+    const hit=Array.isArray(val)? val.includes(want) : val===want;
+    if(hit){m++;matched.push(labelFor(k,want));} else missed.push(labelFor(k,want));
+  }
+  for(const f of a.feats){ if(b.t[f]===true){m++;matched.push(featLabel(f));} else missed.push(featLabel(f)); }
+  return {score:m/a.count,matched:matched,missed:missed};
+}
+function labelFor(k,v){
+  if(k==='size')return SIZE_LABEL[v];
+  if(k==='egg')return EGG_LABEL[v]+' eggs';
+  if(k==='comb')return (v==='v-shape'?'V-shape':v.charAt(0).toUpperCase()+v.slice(1))+' comb';
+  if(k==='pattern')return (PATTERN[v]||{}).l||v;
+  if(k==='legs')return LEG_LABEL[v]+' legs';
+  if(k==='plumage')return (PLUMAGE[v]||{}).l||v;
+  return v;
+}
+function featLabel(f){return {crest:'Crest',beard:'Beard/muffs',featheredFeet:'Feathered feet'}[f];}
+function learnedScore(b,a){
+  const obs=learning.observations.filter(o=>o.type===idType);
+  if(!obs.length||!a.count) return 0;
+  let acc=0,maxAcc=0;
+  for(const o of obs){
+    let m=0,t=0;
+    for(const k of a.singles){ if(o.sel&&o.sel[k]!=null){t++; if(o.sel[k]===sel[k])m++;} }
+    for(const f of a.feats){ t++; if((o.feat||[]).includes(f))m++; }
+    if(!t) continue;
+    const sim=m/t;
+    if(o.confirmedId===b.id) acc+=sim;
+    maxAcc+=sim;
+  }
+  return maxAcc>0? acc/maxAcc : 0;
+}
+function renderResults(){
+  const a=answeredKeys();
+  document.getElementById('answeredNote').textContent=a.count?(a.count+' clue'+(a.count!==1?'s':'')+' given'):'';
+  const body=document.getElementById('resultsBody');
+  const ln=document.getElementById('learnNote');
+  const nObs=learning.observations.filter(o=>o.type===idType).length;
+  if(nObs){ln.hidden=false;ln.textContent='Personalized from '+nObs+' confirmed sighting'+(nObs!==1?'s':'');}else ln.hidden=true;
+  if(!a.count){ body.innerHTML='<div class="empty"><b>Start tapping clues</b>Pick a size, comb shape, color or egg color and matches appear here.</div>';lastResults=[];renderFeedback();return; }
+  const alpha=Math.min(0.45,nObs*0.05);
+  const scored=BREEDS.filter(b=>b.type===idType).map(b=>{
+    const s=staticScore(b,a), ls=learnedScore(b,a);
+    const final=s.score*(1-alpha)+ls*alpha;
+    return {b:b,final:final,matched:s.matched,missed:s.missed,boosted:ls>0&&alpha>0};
+  }).filter(r=>r.final>0).sort((x,y)=>y.final-x.final).slice(0,6);
+  lastResults=scored;
+  if(!scored.length){ body.innerHTML='<div class="empty"><b>No clear match yet</b>Add another clue, or some combinations are simply uncommon.</div>';renderFeedback();return; }
+  body.innerHTML=scored.map((r,i)=>{
+    const pct=Math.round(r.final*100);
+    const tags=r.matched.slice(0,5).map(t=>'<span class="tag">✓ '+t+'</span>').join('')
+      +r.missed.slice(0,2).map(t=>'<span class="tag miss">✕ '+t+'</span>').join('');
+    return '<div class="res '+(i===0?'win':'')+'">'
+      +'<div class="row1"><h4>'+r.b.name+(r.boosted?'<span class="boosted">↑ your sightings</span>':'')+'</h4><span class="pct">'+pct+'% match</span></div>'
+      +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+      +'<div class="tags">'+tags+'</div>'
+      +'<div class="act"><button class="btn ghost" data-detail="'+r.b.id+'">View details</button></div></div>';
+  }).join('');
+  body.querySelectorAll('[data-detail]').forEach(btn=>btn.onclick=()=>openDetail(btn.dataset.detail));
+  renderFeedback();
+}
+function renderFeedback(){
+  const old=document.getElementById('fbBox'); if(old) old.remove();
+  if(!lastResults.length) return;
+  const top=lastResults[0].b;
+  const opts=BREEDS.filter(b=>b.type===idType).sort((a,b)=>a.name.localeCompare(b.name))
+    .map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');
+  const box=document.createElement('div');
+  box.className='fb';box.id='fbBox';
+  box.innerHTML='<h3>Know what it is?</h3>'
+    +'<p>Tell the guide and it will weight these clues toward that breed next time.</p>'
+    +'<div class="fb-row">'
+    +'<button class="btn primary" id="fbConfirm">Yes — it is a '+top.name+'</button>'
+    +'<span class="meta">or</span>'
+    +'<select id="fbPick"><option value="">Pick the actual breed…</option>'+opts+'</select>'
+    +'<button class="btn" id="fbCorrect">Save correction</button></div>';
+  document.getElementById('idResults').appendChild(box);
+  document.getElementById('fbConfirm').onclick=()=>recordFeedback(top.id);
+  document.getElementById('fbCorrect').onclick=()=>{const v=document.getElementById('fbPick').value;if(v)recordFeedback(v);else toast('Pick a breed from the list first.');};
+}
+function recordFeedback(confirmedId){
+  const a=answeredKeys(); if(!a.count){toast('Add a few clues before saving.');return;}
+  const guessId=lastResults.length?lastResults[0].b.id:null;
+  learning.observations.push({
+    ts:Date.now(),type:idType,
+    sel:Object.fromEntries(a.singles.map(k=>[k,sel[k]])),
+    feat:[...feat],
+    confirmedId:confirmedId,guessId:guessId,correct:confirmedId===guessId
+  });
+  save(LS.learn,learning);
+  toast('Saved — taught the guide this is a '+BY_ID[confirmedId].name+'.');
+  updateKDot();renderResults();renderKnowledge();
+}
+
+/* ---------- Knowledge ---------- */
+function renderKnowledge(){
+  const obs=learning.observations;
+  document.getElementById('sTotal').textContent=obs.length;
+  const withGuess=obs.filter(o=>o.guessId);
+  document.getElementById('sAcc').textContent=withGuess.length?(Math.round(withGuess.filter(o=>o.correct).length/withGuess.length*100)+'%'):'—';
+  document.getElementById('sBreeds').textContent=new Set(obs.map(o=>o.confirmedId)).size;
+  const log=document.getElementById('log');
+  if(!obs.length){log.innerHTML='<li class="when">No sightings yet. Identify a bird, then confirm what it was.</li>';return;}
+  log.innerHTML=[...obs].reverse().slice(0,10).map(o=>{
+    const b=BY_ID[o.confirmedId], when=new Date(o.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const clues=[...Object.values(o.sel||{}),...(o.feat||[])].length;
+    let guessTxt='';
+    if(o.guessId&&o.guessId!==o.confirmedId) guessTxt=' (guide had guessed '+(BY_ID[o.guessId]?BY_ID[o.guessId].name:'—')+')';
+    else if(o.correct) guessTxt=' — guide was right ✓';
+    return '<li><b>'+(b?b.name:'Unknown')+'</b> confirmed from '+clues+' clue'+(clues!==1?'s':'')+guessTxt+'<div class="when">'+when+' · '+o.type+'</div></li>';
+  }).join('');
+}
+function updateKDot(){const d=document.getElementById('kdot');const n=learning.observations.length;d.hidden=!n;d.textContent=n;}
+document.getElementById('exportK').onclick=()=>{
+  const blob=new Blob([JSON.stringify({type:'coopkey-knowledge',version:1,exported:new Date().toISOString(),observations:learning.observations},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='coop-key-knowledge-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);
+  toast('Knowledge pack downloaded.');
+};
+document.getElementById('importK').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=function(e){
+  const file=e.target.files[0];if(!file)return;const r=new FileReader();
+  r.onload=function(){try{
+    const data=JSON.parse(r.result);
+    const incoming=Array.isArray(data)?data:data.observations;
+    if(!Array.isArray(incoming))throw new Error('bad');
+    const seen=new Set(learning.observations.map(o=>o.ts+'|'+o.confirmedId));
+    let added=0;
+    for(const o of incoming){ if(o&&o.confirmedId&&BY_ID[o.confirmedId]){const key=o.ts+'|'+o.confirmedId; if(!seen.has(key)){learning.observations.push(o);seen.add(key);added++;}} }
+    save(LS.learn,learning);updateKDot();renderKnowledge();renderResults();
+    toast(added?('Merged '+added+' new sighting'+(added!==1?'s':'')+'.'):'Nothing new to merge.');
+  }catch(err){toast('That file is not a valid knowledge pack.');}
+  e.target.value='';};
+};
+document.getElementById('resetK').onclick=()=>{
+  if(!learning.observations.length){toast('Nothing to reset.');return;}
+  if(confirm('Erase all learned sightings on this device? This cannot be undone.')){
+    learning={version:1,observations:[]};save(LS.learn,learning);updateKDot();renderKnowledge();renderResults();toast('Learning reset.');
+  }
+};
+
+/* ---------- Tabs / toast / init ---------- */
+function setMode(m){
+  mode=m;localStorage.setItem(LS.mode,m);
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.mode===m));
+  document.getElementById('view-browse').hidden=m!=='browse';
+  document.getElementById('view-identify').hidden=m!=='identify';
+  document.getElementById('view-knowledge').hidden=m!=='knowledge';
+  if(m==='identify'){renderTraitForm();renderResults();}
+  if(m==='knowledge')renderKnowledge();
+}
+document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t)setMode(t.dataset.mode);});
+let toastT;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2600);}
+renderBrowse();updateKDot();setMode(mode);
+</script>
+</body>
+</html>
